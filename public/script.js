@@ -22,9 +22,10 @@ var convertToFahrenheit = function(main_temp){
 var addComment = function(comment, cur_btn){
     let id_answer = $(cur_btn).closest('.answer').data().id;
     let arrayFromLS = getFromLocalStorage();
+    
     for (let i=0; i<arrayFromLS.length; i++){
         if (arrayFromLS[i].id === id_answer) {
-        arrayFromLS[i].comments.push({"name":comment});
+        arrayFromLS[i].comments.push({"id":arrayFromLS[i].comments.length,"name":comment});
         }
     }
     console.log("return", arrayFromLS);
@@ -50,6 +51,11 @@ var AppendData = function () {
     $('.answers').append(newHTML);
     BindAddComment();
   }
+//-----------START----------------
+  if(getFromLocalStorage().length){
+    AppendData();  
+  }
+   //------------------------------
 
   var guidPostId = function (){
     function S4() {
@@ -62,15 +68,21 @@ var AppendData = function () {
   }
 
  var saveToObj = function(data){
-let id =  guidPostId();
+  let id =  guidPostId();
   let temp_C = Math.round(convertToCelcium(data.main.temp));
   let temp_F = Math.round(convertToFahrenheit(data.main.temp));
   var date_time = new Date();
-  console.log(weather_posts);
+  let weather_posts = getFromLocalStorage(); 
   weather_posts.push({"id":id,"city": data.name,"tempC": temp_C, "tempF": temp_F,
-  "date":date_time, "comments": []});
+  "date": date_time, "comments": []});
   return (weather_posts);
  }
+//  var checkClassShow = function(){
+//  console.log(   !$('.answer').hasClass("show"));
+// if  (!$('.answer').hasClass("show"))
+// $('.answer').toggleClass('show');
+//  }
+
 var fetch = function (city_name) {
     $.ajax({
         method: "GET", 
@@ -78,17 +90,17 @@ var fetch = function (city_name) {
         + '&appid=0d56cc322ea663bf00369beddf3f9f61',
         success: function (data) {
             if (data) {
-            console.log(data);
             let temperature = saveToObj(data);
             saveToLocalStorage(temperature);
             AppendData();
             }
             else {
-                alert("uncorrect City Name");
                 $('.answers').append("Check city name");
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
+            alert("uncorrect City Name");
+            AppendData();
             console.log(textStatus);
         }
     });
