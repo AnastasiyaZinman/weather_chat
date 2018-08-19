@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="/font-awesome/css/font-awesome.css">
     <link rel="stylesheet" type="text/css" href="/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" type="text/css" href="style.css">
     <title></title>
 </head>
@@ -21,10 +22,16 @@
 
             <form>
                 <div class="form-group">
+                        <div class="input-group mb-3">
                     <input type="text" id="city-name" class="form-control" placeholder="Type a city name">
+                    <div class="input-group-prepend">
+                    <button class="btn btn-primary search center" type="reset" title="Search">Search</button>
+                </div></div>
+            
                 </div>
 
-                <button class="btn btn-primary search" type="button">Search</button>
+
+                
             </form>
 
             <hr>
@@ -34,13 +41,15 @@
 
     </div>
     <script id="weather-template" type="text/x-handlebars-template">    
+        {{#each weather_posts}} 
     <div class="answer col-md-6  offset-md-3 img-fluid " data-id="{{id}}"> 
-        <h4 class="text-capitalize font-italic text-center">{{city}}</h4>
+        <h3 class="text-capitalize text-center">{{city}}</h3> <button type='button' class='close delete' aria-label='Close'><i class="material-icons">delete</i></button>
         <hr>
         <div class="weather_data"><span class="temp">{{tempC}}&#8451;/{{tempF}}°F </span> at {{date}}</div>
-        <h5 class="font-italic font-bold text-center">Comments</h5>
+        <br>
+        <h5 class="font-bold text-center">Comments</h5>
         <div class="input-group mb-3">
-            <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+            <input type="text" class="form-control" id="basic-url" placeholder="Comment about the weather in {{city}}" aria-describedby="basic-addon3">
             <div class="input-group-prepend">
                 <button class="add-comment input-group-text" id="basic-addon3"type="button">Add Comment</button>
             </div>
@@ -52,6 +61,7 @@
             {{/each}}
         </ul>
     </div>
+    {{/each}}
   </script>
     <script src="/jquery/dist/jquery.min.js"></script>
     <script src="/handlebars/dist/handlebars.min.js"></script>

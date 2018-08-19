@@ -1,6 +1,27 @@
 .page-header{
     margin-top: 30px;
 }
+h1{
+/* color: rgb(26, 125, 206); */
+color: white;
+}
+h3 {
+    color: rgb(122, 133, 141);
+    margin: 10px 0 0;
+    /* text-shadow: 1px 1px rgb(54, 110, 156); */
+}
+.btn-primary {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #5eb7df;
+}
+.material-icons {
+
+font-size: 19px;
+}
+.delete{
+    margin:-23px 0 10px !important;
+}
 .show {
     display: block;
   }
@@ -13,8 +34,18 @@
 .answers{
     margin-left: 30px;
 }
+.answer{
+    background-color: aliceblue;
+    /* border: 2px solid rgb(26, 125, 206); */
+    border-radius: 15px;
+    box-shadow: 2px 2px 3px rgba(100, 106, 109, 0.719);
+}
 .close {
     float:right;
     margin: 0 15px;
     font-size: 15px;
+  }
+  body{
+      background: url(weather2.jpg) rgb(152, 203, 245);
+      background-size:cover;
   }

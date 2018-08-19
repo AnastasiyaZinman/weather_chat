@@ -36,18 +36,25 @@ var BindAddComment = function(){
     $('.add-comment').off();
     $('.add-comment').click(function () {
     let comment = $(this).parent().parent().find('input').val();
+    if(comment){
     saveToLocalStorage(addComment(comment, this));
     console.log(getFromLocalStorage());
     AppendData();
+    }
+    else {
+        alert("Your comment is empty");
+    }
     })
 
 }
 var AppendData = function () {
     $('.answers').empty();
-    let temperature = getFromLocalStorage();
+    // console.log("Getfrom",getFromLocalStorage());
+    let temperature = {weather_posts:getFromLocalStorage()};
+    console.log("temperature",temperature);
     var source = $('#weather-template').html();
     var template = Handlebars.compile(source);
-    var newHTML = template(temperature[0]);
+    var newHTML = template(temperature);
     $('.answers').append(newHTML);
     BindAddComment();
   }
@@ -73,16 +80,11 @@ var AppendData = function () {
   let temp_F = Math.round(convertToFahrenheit(data.main.temp));
   var date_time = new Date();
   let weather_posts = getFromLocalStorage(); 
+  console.log("weather_post",weather_posts);
   weather_posts.push({"id":id,"city": data.name,"tempC": temp_C, "tempF": temp_F,
   "date": date_time, "comments": []});
   return (weather_posts);
  }
-//  var checkClassShow = function(){
-//  console.log(   !$('.answer').hasClass("show"));
-// if  (!$('.answer').hasClass("show"))
-// $('.answer').toggleClass('show');
-//  }
-
 var fetch = function (city_name) {
     $.ajax({
         method: "GET", 
@@ -105,5 +107,3 @@ var fetch = function (city_name) {
         }
     });
 };
-
- 
