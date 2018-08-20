@@ -9,7 +9,7 @@ var saveToLocalStorage = function () {
 var getFromLocalStorage = function () {
     return JSON.parse(localStorage.getItem(STORAGE_ID) || '[]');
 }
-var weather_posts = {"w_data": getFromLocalStorage()};
+var weather_posts = { "w_data": getFromLocalStorage() };
 
 // console.log("weather_posts",weather_posts);
 var source = $('#weather-template').html();
@@ -23,15 +23,15 @@ var convertToFahrenheit = function (main_temp) {
     return 1.8 * (main_temp - 273) + 32;
 }
 
-var addComment = function (comment, cur_btn) {
-    let id_answer = $(cur_btn).closest('.answer').data().id;
+var addComment = function (comment, id_answer) {
     // for (let i = 0; i < weather_posts.w_data.length; i++) {
     //      
-        weather_posts.w_data.map((item) => { 
-        if (item.id === id_answer) { 
-           item.comments.push(new Comment(item.comments.length, comment));
-         }})
-    }
+    weather_posts.w_data.map((item) => {
+        if (item.id === id_answer) {
+            item.comments.push(new Comment(item.comments.length, comment));
+        }
+    })
+}
 // }
 
 // var BindAddComment = function () {
@@ -52,7 +52,7 @@ var addComment = function (comment, cur_btn) {
 var AppendData = function () {
     $('.answers').empty();
     saveToLocalStorage();
-    console.log("Append",weather_posts );
+    // console.log("Append",weather_posts );
     var newHTML = template(weather_posts);
     $('.answers').append(newHTML);
 }
@@ -92,7 +92,7 @@ var fetch = function (city_name) {
         url: 'https://api.openweathermap.org/data/2.5/weather?q=' + city_name
             + '&appid=0d56cc322ea663bf00369beddf3f9f61',
         success: function (data) {
-            if (data) {
+            if (data) {  
                 saveToObj(data);
                 // saveToLocalStorage();
                 AppendData();
@@ -103,7 +103,7 @@ var fetch = function (city_name) {
         },
         error: function (jqXHR, textStatus, errorThrown) {
             alert("uncorrect City Name");
-            AppendData();
+            // AppendData();
             console.log(textStatus);
         }
     });
@@ -112,15 +112,17 @@ var fetch = function (city_name) {
 
 //Insert new search
 $('.search').on('click', function () {
-    $('.answers').empty();
+  
     var title = $('input').val();
     fetch(title);
 })
 
-$('.answers').on('click','.add-comment',function () {
+$('.answers').on('click', '.add-comment', function () {
     let comment = $(this).parent().parent().find('input').val();
+    let id_answer = $(this).closest('.answer').data().id;
+
     if (comment) {
-        addComment(comment, this);
+        addComment(comment, id_answer);
         AppendData();
     }
     else {
