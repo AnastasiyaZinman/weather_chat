@@ -1,5 +1,9 @@
+import { Comment } from './comments.js';
+import { Weather } from './weather_box.js';
+
 var STORAGE_ID = 'weather';
 var weather_posts = [];
+
 var saveToLocalStorage = function (weather_posts) {
     localStorage.setItem(STORAGE_ID, JSON.stringify(weather_posts));
   }
@@ -25,7 +29,8 @@ var addComment = function(comment, cur_btn){
     
     for (let i=0; i<arrayFromLS.length; i++){
         if (arrayFromLS[i].id === id_answer) {
-        arrayFromLS[i].comments.push({"id":arrayFromLS[i].comments.length,"name":comment});
+            // arrayFromLS[i].comments.push({"id":arrayFromLS[i].comments.length,"text":comment});
+            arrayFromLS[i].comments.push(new Comment(arrayFromLS[i].comments.length,comment));
         }
     }
     console.log("return", arrayFromLS);
@@ -49,8 +54,7 @@ var BindAddComment = function(){
 }
 var AppendData = function () {
     $('.answers').empty();
-    // console.log("Getfrom",getFromLocalStorage());
-    let temperature = {weather_posts:getFromLocalStorage()};
+    let temperature = {"weather_posts": getFromLocalStorage()};
     console.log("temperature",temperature);
     var source = $('#weather-template').html();
     var template = Handlebars.compile(source);
@@ -70,7 +74,7 @@ var AppendData = function () {
     }
      
     // then to call it, plus stitch in '4' in the third group
-    guid = (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
+    let guid = (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
     return guid;
   }
 
@@ -81,8 +85,9 @@ var AppendData = function () {
   var date_time = new Date();
   let weather_posts = getFromLocalStorage(); 
   console.log("weather_post",weather_posts);
-  weather_posts.push({"id":id,"city": data.name,"tempC": temp_C, "tempF": temp_F,
-  "date": date_time, "comments": []});
+  weather_posts.push(new Weather(id, data.name, temp_C, temp_F,date_time));
+//       {"id":id,"city": data.name,"tempC": temp_C, "tempF": temp_F,
+//   "date": date_time, "comments": []});
   return (weather_posts);
  }
 var fetch = function (city_name) {
