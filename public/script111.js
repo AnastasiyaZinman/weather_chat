@@ -3,15 +3,14 @@ import { Weather } from './weather_box.js';
 
 var STORAGE_ID = 'weather';
 
-var saveToLocalStorage = function () {
-    localStorage.setItem(STORAGE_ID, JSON.stringify(weather_posts.w_data));
+var saveToLocalStorage = function (weather_posts) {
+    localStorage.setItem(STORAGE_ID, JSON.stringify(weather_posts));
 }
 var getFromLocalStorage = function () {
     return JSON.parse(localStorage.getItem(STORAGE_ID) || '[]');
 }
-var weather_posts = {"w_data": getFromLocalStorage()};
-
-// console.log("weather_posts",weather_posts);
+var weather_posts = getFromLocalStorage();
+console.log("FIRSTLOCAL");
 var source = $('#weather-template').html();
 var template = Handlebars.compile(source);
 
@@ -25,14 +24,17 @@ var convertToFahrenheit = function (main_temp) {
 
 var addComment = function (comment, cur_btn) {
     let id_answer = $(cur_btn).closest('.answer').data().id;
-    // for (let i = 0; i < weather_posts.w_data.length; i++) {
-    //      
-        weather_posts.w_data.map((item) => { 
-        if (item.id === id_answer) { 
-           item.comments.push(new Comment(item.comments.length, comment));
-         }})
+    let arrayFromLS = getFromLocalStorage();
+
+    for (let i = 0; i < arrayFromLS.length; i++) {
+        if (arrayFromLS[i].id === id_answer) {
+            // arrayFromLS[i].comments.push({"id":arrayFromLS[i].comments.length,"text":comment});
+            arrayFromLS[i].comments.push(new Comment(arrayFromLS[i].comments.length, comment));
+        }
     }
-// }
+    console.log("return", arrayFromLS);
+    return arrayFromLS;
+}
 
 // var BindAddComment = function () {
 //     // $('.add-comment').off();
@@ -51,13 +53,14 @@ var addComment = function (comment, cur_btn) {
 // }
 var AppendData = function () {
     $('.answers').empty();
-    saveToLocalStorage();
-    console.log("Append",weather_posts );
-    var newHTML = template(weather_posts);
+    let temperature = { "weather_posts": getFromLocalStorage() };
+    console.log("temperature", temperature);
+    var newHTML = template(temperature);
     $('.answers').append(newHTML);
+    // BindAddComment();
 }
 //-----------START----------------
-if (weather_posts.w_data.length) {
+if (weather_posts.length) {
     AppendData();
 }
 //------------------------------
@@ -80,10 +83,11 @@ var saveToObj = function (data) {
     let date_time = date.getHours() + ":"
         + date.getMinutes() + " on " + date.getDate() + "/" +
         (date.getMonth() + 1) + "/" + date.getFullYear();
-    // let weather_posts = getFromLocalStorage();
-    // console.log("date_time", date_time);
+    let weather_posts = getFromLocalStorage();
+    console.log("date_time", date_time);
     console.log("weather_post", weather_posts);
-    weather_posts.w_data.push(new Weather(id, data.name, temp_C, temp_F, date_time));
+    weather_posts.push(new Weather(id, data.name, temp_C, temp_F, date_time));
+    return (weather_posts);
 }
 
 var fetch = function (city_name) {
@@ -93,8 +97,8 @@ var fetch = function (city_name) {
             + '&appid=0d56cc322ea663bf00369beddf3f9f61',
         success: function (data) {
             if (data) {
-                saveToObj(data);
-                // saveToLocalStorage();
+                let temperature = saveToObj(data);
+                saveToLocalStorage(temperature);
                 AppendData();
             }
             else {
@@ -120,7 +124,7 @@ $('.search').on('click', function () {
 $('.answers').on('click','.add-comment',function () {
     let comment = $(this).parent().parent().find('input').val();
     if (comment) {
-        addComment(comment, this);
+        saveToLocalStorage(addComment(comment, this));
         AppendData();
     }
     else {
