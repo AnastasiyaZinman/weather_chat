@@ -1,7 +1,7 @@
 import { Comment } from './comments.js';
 import { Weather } from './weather_box.js';
 
-var STORAGE_ID = 'weather';
+
 
 var saveToLocalStorage = function (weather_posts) {
     localStorage.setItem(STORAGE_ID, JSON.stringify(weather_posts));
@@ -9,6 +9,8 @@ var saveToLocalStorage = function (weather_posts) {
 var getFromLocalStorage = function () {
     return JSON.parse(localStorage.getItem(STORAGE_ID) || '[]');
 }
+
+var STORAGE_ID = 'weather';
 var weather_posts = getFromLocalStorage();
 var source = $('#weather-template').html();
 var template = Handlebars.compile(source);
@@ -19,6 +21,15 @@ var convertToCelcium = function (main_temp) {
 }
 var convertToFahrenheit = function (main_temp) {
     return 1.8 * (main_temp - 273) + 32;
+}
+
+var guidPostId = function () {
+    function S4() {
+        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+    }
+    // then to call it, plus stitch in '4' in the third group
+    let guid = (S4() + S4() + "-" + S4() + "-4" + S4().substr(0, 3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
+    return guid;
 }
 
 var addComment = function (comment, cur_btn) {
@@ -52,27 +63,18 @@ var addComment = function (comment, cur_btn) {
 // }
 var AppendData = function () {
     $('.answers').empty();
-    let temperature = { "weather_posts": getFromLocalStorage() };
+    let temperature = { "weather_posts": weather_posts };
     console.log("temperature", temperature);
     var newHTML = template(temperature);
     $('.answers').append(newHTML);
     // BindAddComment();
 }
 //-----------START----------------
-if (weather_posts.length) {
-    AppendData();
-}
+// if (getFromLocalStorage().length) {
+//     AppendData();
+// }
 //------------------------------
 
-var guidPostId = function () {
-    function S4() {
-        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-    }
-
-    // then to call it, plus stitch in '4' in the third group
-    let guid = (S4() + S4() + "-" + S4() + "-4" + S4().substr(0, 3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
-    return guid;
-}
 
 var saveToObj = function (data) {
     let id = guidPostId();
@@ -82,7 +84,6 @@ var saveToObj = function (data) {
     let date_time = date.getHours() + ":"
         + date.getMinutes() + " on " + date.getDate() + "/" +
         (date.getMonth() + 1) + "/" + date.getFullYear();
-    let weather_posts = getFromLocalStorage();
     console.log("date_time", date_time);
     console.log("weather_post", weather_posts);
     weather_posts.push(new Weather(id, data.name, temp_C, temp_F, date_time));
@@ -124,6 +125,7 @@ $('.answers').on('click','.add-comment',function () {
     let comment = $(this).parent().parent().find('input').val();
     if (comment) {
         saveToLocalStorage(addComment(comment, this));
+        console.log(getFromLocalStorage());
         AppendData();
     }
     else {
